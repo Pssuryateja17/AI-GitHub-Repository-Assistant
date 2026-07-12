@@ -1,0 +1,57 @@
+// Prisma schema for AI GitHub Repository Assistant - Module 1
+// Defines the User model used for authentication.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  analysisHistory    AnalysisHistory[]
+  savedRepositories  SavedRepository[]
+
+  @@map("users")
+}
+
+model AnalysisHistory {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repositoryFullName String
+  repositoryUrl      String
+  metadata           Json
+  analysis           Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@index([repositoryFullName])
+  @@map("analysis_history")
+}
+
+model SavedRepository {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repositoryFullName String
+  repositoryUrl      String
+  note               String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([userId, repositoryFullName])
+  @@index([userId])
+  @@map("saved_repositories")
+}

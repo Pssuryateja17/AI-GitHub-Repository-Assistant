@@ -1,0 +1,126 @@
+{
+  "info": {
+    "name": "AI GitHub Repository Assistant - Module 2",
+    "description": "Covers the GitHub Repository Analyzer endpoint added in Module 2. The /api/github/analyze endpoint requires authentication, so a Login request is included first to establish the session cookie in Postman's cookie jar before calling Analyze.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (required before Analyze)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Sets the httpOnly agra_token cookie in Postman's cookie jar, which the Analyze request below relies on."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "GitHub Analyzer",
+      "item": [
+        {
+          "name": "Analyze Repository",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"repositoryUrl\": \"https://github.com/facebook/react\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/github/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["github", "analyze"]
+            },
+            "description": "Requires authentication (cookie set by the Login request). Fetches repository metadata + README from the GitHub REST API, then sends it to the local Ollama model (llama3.2:3b) for structured analysis."
+          },
+          "response": [
+            {
+              "name": "200 OK - Sample Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryUrl\": \"https://github.com/facebook/react\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/github/analyze",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["github", "analyze"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Repository analyzed successfully\",\n  \"data\": {\n    \"repository\": {\n      \"owner\": \"facebook\",\n      \"name\": \"react\",\n      \"fullName\": \"facebook/react\",\n      \"description\": \"The library for web and native user interfaces.\",\n      \"url\": \"https://github.com/facebook/react\",\n      \"homepage\": \"https://react.dev\",\n      \"stars\": 228000,\n      \"forks\": 46700,\n      \"openIssues\": 1050,\n      \"defaultBranch\": \"main\",\n      \"primaryLanguage\": \"JavaScript\",\n      \"languages\": {\n        \"JavaScript\": 9800000,\n        \"C++\": 210000,\n        \"TypeScript\": 95000\n      },\n      \"topics\": [\"react\", \"javascript\", \"library\", \"ui\"],\n      \"sizeKb\": 215000,\n      \"createdAt\": \"2013-05-24T16:15:54Z\",\n      \"updatedAt\": \"2026-07-01T09:12:00Z\",\n      \"pushedAt\": \"2026-07-01T09:12:00Z\",\n      \"license\": \"MIT License\",\n      \"latestRelease\": {\n        \"tagName\": \"v19.1.0\",\n        \"name\": \"React 19.1.0\",\n        \"publishedAt\": \"2026-05-10T00:00:00Z\",\n        \"url\": \"https://github.com/facebook/react/releases/tag/v19.1.0\"\n      },\n      \"contributorsCount\": 100,\n      \"ownerAvatarUrl\": \"https://avatars.githubusercontent.com/u/69631?v=4\"\n    },\n    \"readme\": \"# React\\n\\nReact is a library for building user interfaces...\",\n    \"analysis\": {\n      \"summary\": \"React is a declarative, component-based JavaScript library for building user interfaces, maintained by Meta and a large open-source community.\",\n      \"purpose\": \"Provides a predictable way to build interactive UIs by composing reusable components and managing state changes efficiently through a virtual DOM.\",\n      \"technologies\": [\"JavaScript\", \"C++\", \"TypeScript\"],\n      \"languages\": [\"JavaScript\", \"C++\", \"TypeScript\"],\n      \"frameworks\": [\"React DOM\", \"React Native\"],\n      \"architecture\": \"Monorepo managed with a custom build system, organized around a reconciler core, renderer packages (DOM, Native), and a scheduler for concurrent rendering.\",\n      \"folderStructure\": \"packages/ - individual publishable packages (react, react-dom, scheduler)\\nfixtures/ - manual test applications\\nscripts/ - build and release tooling\",\n      \"installation\": \"```\\nnpm install react react-dom\\n```\\nThen import React in your project entry point.\",\n      \"dependencies\": [\"loose-envify\", \"scheduler\"],\n      \"difficulty\": \"Advanced\",\n      \"advantages\": [\"Huge ecosystem\", \"Strong community support\", \"Component reusability\"],\n      \"disadvantages\": [\"Steep learning curve for internals\", \"Frequent ecosystem churn\"],\n      \"bestPractices\": [\"Component composition over inheritance\", \"Hooks for state and side effects\"],\n      \"improvements\": [\"More granular internal documentation\", \"Simplified contribution onboarding\"],\n      \"roadmap\": [\n        \"Learn JavaScript ES6+ fundamentals\",\n        \"Understand JSX and component composition\",\n        \"Learn hooks (useState, useEffect)\",\n        \"Study the reconciliation algorithm\",\n        \"Explore the source under packages/react-reconciler\"\n      ],\n      \"careerSkills\": [\"Frontend architecture\", \"Component design\", \"Open-source collaboration\"],\n      \"targetUsers\": [\"Frontend developers\", \"Students learning UI libraries\", \"Recruiters assessing frontend candidates\"]\n    }\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Invalid URL",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryUrl\": \"not-a-github-url\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/github/analyze",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["github", "analyze"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\n    {\n      \"path\": \"body.repositoryUrl\",\n      \"message\": \"repositoryUrl must be a valid public GitHub repository URL (https://github.com/owner/repository)\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "401 Unauthorized - Missing Session",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryUrl\": \"https://github.com/facebook/react\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/github/analyze",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["github", "analyze"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Authentication token missing\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

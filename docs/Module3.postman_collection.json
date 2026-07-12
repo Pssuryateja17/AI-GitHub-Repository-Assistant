@@ -1,0 +1,328 @@
+{
+  "info": {
+    "name": "AI GitHub Repository Assistant - Module 3",
+    "description": "Repository Comparison, Analysis History, and Saved Repositories. IMPORTANT: as of this collection's generation, only the Compare endpoint is actually mounted on the backend (POST /api/compare). The History and Saved Repositories requests below document the intended contract from their validators/services, but their controllers/routes were never generated and are NOT mounted in routes/index.ts - calling them against the current backend will 404. A Login request is included first since Compare (and the intended History/Saved endpoints) all require authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (required before any Module 3 request)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comparison (LIVE)",
+      "item": [
+        {
+          "name": "Compare Repositories",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"repositoryAUrl\": \"https://github.com/facebook/react\",\n  \"repositoryBUrl\": \"https://github.com/vuejs/core\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/compare",
+              "host": ["{{baseUrl}}"],
+              "path": ["compare"]
+            },
+            "description": "Mounted at router.use('/', comparisonRoutes) in routes/index.ts. Requires authentication and is rate-limited separately from /github/analyze (10 requests / 15 min)."
+          },
+          "response": [
+            {
+              "name": "200 OK - Sample Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryAUrl\": \"https://github.com/facebook/react\",\n  \"repositoryBUrl\": \"https://github.com/vuejs/core\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/compare",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["compare"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Repositories compared successfully\",\n  \"data\": {\n    \"repositoryA\": {\n      \"metadata\": { \"fullName\": \"facebook/react\", \"stars\": 228000, \"forks\": 46700, \"openIssues\": 1050 },\n      \"analysis\": { \"summary\": \"React is a declarative library for building user interfaces.\", \"difficulty\": \"Advanced\", \"advantages\": [\"Huge ecosystem\", \"Strong community support\"], \"technologies\": [\"JavaScript\", \"TypeScript\"], \"roadmap\": [\"Learn JSX\", \"Learn hooks\", \"Study the reconciler\"] }\n    },\n    \"repositoryB\": {\n      \"metadata\": { \"fullName\": \"vuejs/core\", \"stars\": 46800, \"forks\": 8000, \"openIssues\": 320 },\n      \"analysis\": { \"summary\": \"Vue is a progressive framework for building UIs.\", \"difficulty\": \"Intermediate\", \"advantages\": [\"Gentle learning curve\", \"Excellent documentation\"], \"technologies\": [\"TypeScript\"], \"roadmap\": [\"Learn the Options API\", \"Learn the Composition API\"] }\n    },\n    \"comparison\": {\n      \"stars\": { \"repositoryA\": 228000, \"repositoryB\": 46800, \"winner\": \"A\" },\n      \"forks\": { \"repositoryA\": 46700, \"repositoryB\": 8000, \"winner\": \"A\" },\n      \"openIssues\": { \"repositoryA\": 1050, \"repositoryB\": 320, \"winner\": \"B\" },\n      \"technologies\": { \"repositoryA\": [\"JavaScript\", \"TypeScript\"], \"repositoryB\": [\"TypeScript\"], \"shared\": [\"TypeScript\"], \"uniqueToA\": [\"JavaScript\"], \"uniqueToB\": [] },\n      \"difficulty\": { \"repositoryA\": \"Advanced\", \"repositoryB\": \"Intermediate\", \"verdict\": \"Repository B (Intermediate) is more approachable than Repository A (Advanced).\" },\n      \"learningCurve\": { \"repositoryA\": \"Advanced - approximately 3 learning roadmap steps identified\", \"repositoryB\": \"Intermediate - approximately 2 learning roadmap steps identified\", \"verdict\": \"Repository B has a gentler learning curve than Repository A.\" },\n      \"summary\": { \"repositoryA\": \"React is a declarative library for building user interfaces.\", \"repositoryB\": \"Vue is a progressive framework for building UIs.\" },\n      \"advantages\": { \"repositoryA\": [\"Huge ecosystem\", \"Strong community support\"], \"repositoryB\": [\"Gentle learning curve\", \"Excellent documentation\"] },\n      \"overallRecommendation\": \"facebook/react has stronger community traction (more stars). vuejs/core is likely easier to learn and contribute to.\"\n    }\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Same Repository Twice",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryAUrl\": \"https://github.com/facebook/react\",\n  \"repositoryBUrl\": \"https://github.com/facebook/react\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/compare",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["compare"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"repositoryAUrl and repositoryBUrl must be different repositories\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "History (NOT YET MOUNTED - documents intended contract)",
+      "item": [
+        {
+          "name": "Save Analysis to History",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"repositoryFullName\": \"facebook/react\",\n  \"repositoryUrl\": \"https://github.com/facebook/react\",\n  \"metadata\": { \"stars\": 228000, \"forks\": 46700 },\n  \"analysis\": { \"summary\": \"React is a declarative library...\", \"difficulty\": \"Advanced\" }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/history/save",
+              "host": ["{{baseUrl}}"],
+              "path": ["history", "save"]
+            },
+            "description": "Matches history.validator.ts's saveAnalysisHistorySchema and history.service.ts's recordAnalysisHistory(). NOT reachable yet - history.controller.ts / history.routes.ts do not exist and nothing is mounted at /history in routes/index.ts."
+          },
+          "response": [
+            {
+              "name": "Expected 201 Created (once mounted)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryFullName\": \"facebook/react\",\n  \"repositoryUrl\": \"https://github.com/facebook/react\",\n  \"metadata\": { \"stars\": 228000 },\n  \"analysis\": { \"summary\": \"...\", \"difficulty\": \"Advanced\" }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/history/save",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["history", "save"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Analysis saved to history\",\n  \"data\": {\n    \"id\": \"b3c1e6b0-...\",\n    \"userId\": \"a1f2...\",\n    \"repositoryFullName\": \"facebook/react\",\n    \"repositoryUrl\": \"https://github.com/facebook/react\",\n    \"metadata\": { \"stars\": 228000 },\n    \"analysis\": { \"summary\": \"...\", \"difficulty\": \"Advanced\" },\n    \"createdAt\": \"2026-07-08T02:00:00.000Z\",\n    \"updatedAt\": \"2026-07-08T02:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get History (paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/history?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["history"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            },
+            "description": "Matches history.service.ts's getAnalysisHistoryForUser(). NOT reachable yet."
+          },
+          "response": [
+            {
+              "name": "Expected 200 OK (once mounted)",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/history?page=1&pageSize=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["history"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"History fetched successfully\",\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"b3c1e6b0-...\",\n        \"repositoryFullName\": \"facebook/react\",\n        \"repositoryUrl\": \"https://github.com/facebook/react\",\n        \"metadata\": { \"stars\": 228000 },\n        \"analysis\": { \"summary\": \"...\", \"difficulty\": \"Advanced\" },\n        \"createdAt\": \"2026-07-08T02:00:00.000Z\",\n        \"updatedAt\": \"2026-07-08T02:00:00.000Z\"\n      }\n    ],\n    \"page\": 1,\n    \"pageSize\": 10,\n    \"total\": 1,\n    \"totalPages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete History Entry",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/history/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["history", ":id"],
+              "variable": [{ "key": "id", "value": "b3c1e6b0-0000-0000-0000-000000000000" }]
+            },
+            "description": "Matches history.service.ts's deleteAnalysisHistoryEntry(). NOT reachable yet."
+          },
+          "response": [
+            {
+              "name": "Expected 404 Not Found (entry doesn't belong to user or doesn't exist)",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/history/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["history", ":id"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Analysis history entry not found\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Saved Repositories (NOT YET MOUNTED - documents intended contract)",
+      "item": [
+        {
+          "name": "Save Repository",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"repositoryFullName\": \"facebook/react\",\n  \"repositoryUrl\": \"https://github.com/facebook/react\",\n  \"note\": \"Reference for hooks patterns\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/saved",
+              "host": ["{{baseUrl}}"],
+              "path": ["saved"]
+            },
+            "description": "Matches savedRepositories.service.ts's saveRepositoryForUser(). NOT reachable yet."
+          },
+          "response": [
+            {
+              "name": "Expected 201 Created (once mounted)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryFullName\": \"facebook/react\",\n  \"repositoryUrl\": \"https://github.com/facebook/react\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/saved",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["saved"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Repository saved successfully\",\n  \"data\": {\n    \"id\": \"d4a2f8c1-...\",\n    \"userId\": \"a1f2...\",\n    \"repositoryFullName\": \"facebook/react\",\n    \"repositoryUrl\": \"https://github.com/facebook/react\",\n    \"note\": \"Reference for hooks patterns\",\n    \"createdAt\": \"2026-07-08T02:05:00.000Z\",\n    \"updatedAt\": \"2026-07-08T02:05:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "Expected 409 Conflict (already saved)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"repositoryFullName\": \"facebook/react\",\n  \"repositoryUrl\": \"https://github.com/facebook/react\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/saved",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["saved"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"This repository is already saved\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Saved Repositories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/saved",
+              "host": ["{{baseUrl}}"],
+              "path": ["saved"]
+            },
+            "description": "Matches savedRepositories.service.ts's listSavedRepositoriesForUser(). NOT reachable yet."
+          },
+          "response": [
+            {
+              "name": "Expected 200 OK (once mounted)",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/saved",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["saved"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Saved repositories fetched successfully\",\n  \"data\": [\n    {\n      \"id\": \"d4a2f8c1-...\",\n      \"repositoryFullName\": \"facebook/react\",\n      \"repositoryUrl\": \"https://github.com/facebook/react\",\n      \"note\": \"Reference for hooks patterns\",\n      \"createdAt\": \"2026-07-08T02:05:00.000Z\",\n      \"updatedAt\": \"2026-07-08T02:05:00.000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Unsave Repository",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/saved/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["saved", ":id"],
+              "variable": [{ "key": "id", "value": "d4a2f8c1-0000-0000-0000-000000000000" }]
+            },
+            "description": "Matches savedRepositories.service.ts's unsaveRepositoryForUser(). NOT reachable yet."
+          },
+          "response": [
+            {
+              "name": "Expected 404 Not Found (entry doesn't belong to user or doesn't exist)",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/saved/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["saved", ":id"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Saved repository not found\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
