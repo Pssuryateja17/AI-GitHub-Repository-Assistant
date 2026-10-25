@@ -14,6 +14,7 @@ The **AI-Powered GitHub Repository Analysis Platform** simplifies this process b
 ![Login Interface](https://github.com/Pssuryateja17/AI-GitHub-Repository-Assistant/blob/e89db660eaedc815f4d9841266d314464621eaa0/screenshots/Login_Interface.png)
 
 ### 📊 Dashboard
+![Dashboard](https://github.com/Pssuryateja17/AI-GitHub-Repository-Assistant/blob/9036dce7359add41db28d01d66729a3b6bf20dd9/screenshots/Dashboard.png)
 
 ### 🔍 Repository Analyzer
 
