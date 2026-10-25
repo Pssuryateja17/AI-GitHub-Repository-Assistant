@@ -23,10 +23,13 @@ The **AI-Powered GitHub Repository Analysis Platform** simplifies this process b
 ![Repository Analyzer2](https://github.com/Pssuryateja17/AI-GitHub-Repository-Assistant/blob/16ba8490d98c7173e786ac1c4f07803e556caf5d/screenshots/Repository%20Analyzer_2.png)
 
 ### ⚖️ Compare Repositories
+![Compare Repositories](https://github.com/Pssuryateja17/AI-GitHub-Repository-Assistant/blob/36bf0e496432ab3d033ae0e4571e01869eb9c8ae/screenshots/Compare%20Repositories.png)
 
 ### 🤖 Ai_assistant_chatbox
+![Ai_assistant_chatbox](https://github.com/Pssuryateja17/AI-GitHub-Repository-Assistant/blob/36bf0e496432ab3d033ae0e4571e01869eb9c8ae/screenshots/Ai_assistant_chatbox.png)
 
 ### 🕘 History
+![History](https://github.com/Pssuryateja17/AI-GitHub-Repository-Assistant/blob/36bf0e496432ab3d033ae0e4571e01869eb9c8ae/screenshots/History.png)
 
 ## ✨ Features
 
