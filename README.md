@@ -8,6 +8,22 @@ Understanding a large GitHub repository can be challenging, especially for begin
 
 The **AI-Powered GitHub Repository Analysis Platform** simplifies this process by analyzing public GitHub repositories and presenting useful information in an understandable format. Users can explore repository summaries, technologies, architecture, installation instructions, recommendations, and more through an interactive web interface.
 
+## 📸 Screenshots
+
+### 🔐 Login_Interface
+
+### 📊 Dashboard
+
+### 🔍 Repository Analyzer
+
+### 📑 Repository Analyzer2
+
+### ⚖️ Compare Repositories
+
+### 🤖 Ai_assistant_chatbox
+
+### 🕘 History
+
 ## ✨ Features
 
 - **Repository Analysis:** Analyze public GitHub repositories by entering their URLs.
